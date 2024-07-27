@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do You Love Me?</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background: linear-gradient(45deg, #ff6b6b, #f7d9d9);
+            animation: gradient 10s ease infinite;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            cursor: none;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #loading {
+            font-size: 24px;
+            opacity: 1;
+            transition: opacity 0.5s;
+            margin-bottom: 20px;
+        }
+        #loadingBar {
+            width: 300px;
+            height: 30px;
+            background-color: #555;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            display: none;
+        }
+        #progress {
+            height: 100%;
+            width: 0;
+            background-color: #28a745;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            transition: width 2s;
+        }
+        #heart {
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        #content {
+            display: none;
+            text-align: center;
+        }
+        #readyPrompt {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #question {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        #yes, #no, #readyYes, #readyNo {
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+        #yes, #readyYes {
+            background-color: #28a745;
+            color: white;
+        }
+        #no, #readyNo {
+            background-color: #dc3545;
+            color: white;
+        }
+        #yes:hover, #readyYes:hover, #no:hover, #readyNo:hover {
+            transform: scale(1.1);
+        }
+        #message {
+            font-size: 24px;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            animation: float 2s forwards;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+        .blink {
+            animation: blink-animation 0.5s steps(5, start) infinite;
+        }
+        @keyframes blink-animation {
+            to {
+                visibility: hidden;
+            }
+        }
+        #countdown {
+            font-size: 48px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading">Please wait, something really special is loading...</div>
+    <div id="loadingBar">
+        <div id="progress"></div>
+    </div>
+    <div id="readyPrompt">
+        <div>Are you ready?</div>
+        <button id="readyYes">Yes</button>
+        <button id="readyNo">No</button>
+    </div>
+    <div id="countdown"></div>
+    <div id="content">
+        <div id="question">Do you love me?</div>
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+        <div id="message">Let's talk! 🌹</div>
+    </div>
+
+    <script>
+        const yesButton = document.getElementById('yes');
+        const noButton = document.getElementById('no');
+        const message = document.getElementById('message');
+        const loading = document.getElementById('loading');
+        const loadingBar = document.getElementById('loadingBar');
+        const progress = document.getElementById('progress');
+        const content = document.getElementById('content');
+        const readyPrompt = document.getElementById('readyPrompt');
+        const readyYesButton = document.getElementById('readyYes');
+        const readyNoButton = document.getElementById('readyNo');
+        const countdownElement = document.getElementById('countdown');
+
+        // Show loading bar
+        loadingBar.style.display = 'block';
+
+        // Simulate loading time
+        setTimeout(() => {
+            loading.style.opacity = '0'; // Fade out loading message
+            loadingBar.style.display = 'none'; // Hide loading bar
+            setTimeout(() => {
+                loading.style.display = 'none'; // Hide loading message
+                readyPrompt.style.display = 'block'; // Show the ready prompt
+            }, 500); // Wait for fade out transition to finish
+        }, 2000); // Wait for 2 seconds before showing content
+
+        // Function to update the loading bar with hearts
+        function fillLoadingBar() {
+            const totalHearts = 10;
+            let heartsFilled = 0;
+            const interval = setInterval(() => {
+                if (heartsFilled < totalHearts) {
+                    heartsFilled++;
+                    const heartDiv = document.createElement('div');
+                    heartDiv.innerHTML = '❤️';
+                    heartDiv.classList.add('heart');
+                    heartDiv.style.left = `${(heartsFilled / totalHearts) * 100}%`;
+                    heartDiv.style.bottom = '30px';
+                    loadingBar.appendChild(heartDiv);
+                    const widthPercentage = (heartsFilled / totalHearts) * 100;
+                    progress.style.width = `${widthPercentage}%`;
+                    heartDiv.style.animation = `float 2s forwards`;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 200);
+        }
+
+        fillLoadingBar();
+
+        readyYesButton.addEventListener('click', () => {
+            readyPrompt.style.display = 'none'; // Hide the ready prompt
+            countdown(); // Start countdown before showing content
+        });
+
+        readyNoButton.addEventListener('click', () => {
+            alert("Please click yes, it's really special for you!");
+        });
+
+        function countdown() {
+            let countdownValue = 3; // Starting countdown value
+            countdownElement.textContent = countdownValue; // Display initial countdown
+            countdownElement.style.display = 'block'; // Show countdown
+
+            const countdownInterval = setInterval(() => {
+                countdownValue--; // Decrement countdown value
+                if (countdownValue > 0) {
+                    countdownElement.textContent = countdownValue; // Update countdown display
+                } else {
+                    clearInterval(countdownInterval); // Stop countdown
+                    countdownElement.style.display = 'none'; // Hide countdown
+                    content.style.display = 'block'; // Show the main content
+                }
+            }, 1000); // Update countdown every second
+        }
+
+        yesButton.addEventListener('click', () => {
+            document.body.classList.add('blink');
+            setTimeout(() => {
+                document.body.classList.remove('blink');
+                message.style.opacity = '1';
+                message.style.transition = 'opacity 1s';
+            }, 1000);
+
+            for (let i = 0; i < 10; i++) {
+                createHeart();
+            }
+        });
+
+        noButton.addEventListener('click', () => {
+            moveNoButton();
+        });
+
+        function moveNoButton() {
+            const randomX = Math.floor(Math.random() * (window.innerWidth - 100));
+            const randomY = Math.floor(Math.random() * (window.innerHeight - 100));
+            noButton.style.position = 'absolute';
+            noButton.style.left = `${randomX}px`;
+            noButton.style.top = `${randomY}px`;
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.classList.add('heart');
+            document.body.appendChild(heart);
+            const x = Math.floor(Math.random() * window.innerWidth);
+            heart.style.left = `${x}px`;
+            heart.style.bottom = '0px';
+            heart.style.opacity = '1';
+            setTimeout(() => {
+                heart.remove();
+            }, 2000);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.classList.add('heart');
+            heart.style.left = `${e.pageX}px`;
+            heart.style.top = `${e.pageY}px`;
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, 1000);
+        });
+    </script>
+
+</body>
+</html>
